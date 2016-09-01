@@ -83,4 +83,11 @@ public interface BidRepository extends CrudRepository<Bid, Integer> {
      */
      List<Bid> findAll();
 
+
+    /**
+     * Get all the bids in the database with the same itemId
+     * @return list of bids with given itemId
+     */
+    List<Bid> findByItemId(String itemId);
+
 }

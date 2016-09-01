@@ -26,6 +26,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
@@ -160,6 +161,40 @@ public class BidRepositoryTest {
 
         List<Bid> bidList = bidRepository.findByPricePerUnit(new Integer("6"));
         assertThat(bidList, hasSize(2));
+    }
+
+    @Test
+    public void testFindByItemId() {
+        String itemId = "12345C";
+
+        Bid bid1 = new Bid();
+        bid1.setUser(new Integer("2"));
+        bid1.setItemId(itemId);
+        bid1.setPricePerUnit(new Integer("5"));
+        bid1.setQuantity(new Integer("10"));
+        Bid bidSaved = bidRepository.save(bid1);
+        assertThat(bidSaved.getId(), is(notNullValue()));
+
+        Bid bid2 = new Bid();
+        bid2.setUser(new Integer("4"));
+        bid2.setItemId(itemId);
+        bid2.setPricePerUnit(new Integer("6"));
+        bid2.setQuantity(new Integer("10"));
+        Bid bidSaved2 = bidRepository.save(bid2);
+        assertThat(bidSaved2.getId(), is(notNullValue()));
+
+        Bid bid3 = new Bid();
+        bid3.setUser(new Integer("4"));
+        bid3.setItemId(itemId);
+        bid3.setPricePerUnit(new Integer("6"));
+        bid3.setQuantity(new Integer("23"));
+        Bid bidSaved3 = bidRepository.save(bid3);
+        assertThat(bidSaved3.getId(), is(notNullValue()));
+
+        List<Bid> bidList = bidRepository.findByItemId(itemId);
+        assertThat(bidList, hasSize(3));
+        assertThat(bidList, contains(bid1, bid2, bid3));
+
     }
 
 }
