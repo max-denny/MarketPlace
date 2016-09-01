@@ -27,6 +27,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -168,6 +169,40 @@ public class OfferRepositoryTest {
 
         List<Offer> offerList = offerRepository.findByPricePerUnit(new Integer("4"));
         assertThat(offerList, hasSize(2));
+
+    }
+
+    @Test
+    public void testFindByItemId() {
+        String itemId = "1234C";
+
+        Offer offer1 = new Offer();
+        offer1.setUser(new Integer("3"));
+        offer1.setQuantity(new Integer("3"));
+        offer1.setPricePerUnit(new Integer("4"));
+        offer1.setItemId(itemId);
+        Offer offerSaved = offerRepository.save(offer1);
+        assertThat(offerSaved.getId(), is(notNullValue()));
+
+        Offer offer2 = new Offer();
+        offer2.setUser(new Integer("4"));
+        offer2.setQuantity(new Integer("2"));
+        offer2.setPricePerUnit(new Integer("10"));
+        offer2.setItemId(itemId);
+        Offer offerSaved2 = offerRepository.save(offer2);
+        assertThat(offerSaved2.getId(), is(notNullValue()));
+
+        Offer offer3 = new Offer();
+        offer3.setUser(new Integer("4"));
+        offer3.setQuantity(new Integer("3"));
+        offer3.setPricePerUnit(new Integer("4"));
+        offer3.setItemId(itemId);
+        Offer offerSaved3 = offerRepository.save(offer3);
+        assertThat(offerSaved3.getId(), is(notNullValue()));
+
+        List<Offer> offerList = offerRepository.findByItemId(itemId);
+        assertThat(offerList, hasSize(3));
+        assertThat(offerList, contains(offer1, offer2, offer3));
 
     }
 }
