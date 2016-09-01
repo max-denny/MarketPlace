@@ -80,4 +80,10 @@ public interface OfferRepository extends CrudRepository<Offer, Integer> {
      */
     List<Offer> findAll();
 
+    /**
+     * Get a list of offers with the same itemId
+     * @return a list of offers
+     */
+    List<Offer> findByItemId(String itemId);
+
 }
