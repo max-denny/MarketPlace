@@ -37,7 +37,6 @@ public interface ItemOrderRepository extends CrudRepository<ItemOrder, Integer> 
      * @param sellerId
      * @return list the order for a given user (seller)
      */
-    @Query("SELECT itemId, quantity, pricePerUnit, buyerId, sellerId FROM ItemOrder WHERE sellerId=?1")
     List<ItemOrder> findBySellerId(Integer sellerId);
 
 
@@ -46,7 +45,6 @@ public interface ItemOrderRepository extends CrudRepository<ItemOrder, Integer> 
      * @param buyerId
      * @return List of orders for a given user (buyer)
      */
-    @Query("SELECT itemId, quantity, pricePerUnit, buyerId, sellerId FROM ItemOrder WHERE buyerId=?1")
     List<ItemOrder> findByBuyerId(Integer buyerId);
 
 }
