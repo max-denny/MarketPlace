@@ -32,9 +32,16 @@ public class OrderController {
     @RequestMapping(value = "/seller/{sellerId}",
             method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemOrder> getOffersForUser(@PathVariable("sellerId") int sellerId) {
+    public List<ItemOrder> getOrdersForSeller(@PathVariable("sellerId") int sellerId) {
         return orderService.getBySellerId(sellerId);
     }
 
-    
+    @RequestMapping(value = "/buyer/{buyerId}",
+            method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<ItemOrder> getOrdersForBuyer(@PathVariable("buyerId") int buyerId) {
+        return orderService.getByBuyerId(buyerId);
+    }
+
+
 }
