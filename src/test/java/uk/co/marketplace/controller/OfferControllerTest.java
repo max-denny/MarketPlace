@@ -23,11 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.co.marketplace.domain.Offer;
 import uk.co.marketplace.service.OfferService;
 
-import static org.mockito.Matchers.contains;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -74,24 +73,10 @@ public class OfferControllerTest extends ControllerBaseTest {
         offer2.setUser(6);
         offerService.addOffer(offer2);
 
-        String content = "[ {\n" +
-                "  \"id\" : 1,\n" +
-                "  \"user\" : 6,\n" +
-                "  \"itemId\" : \"12345\",\n" +
-                "  \"quantity\" : 2,\n" +
-                "  \"pricePerUnit\" : 8\n" +
-                "}, {\n" +
-                "  \"id\" : 2,\n" +
-                "  \"user\" : 6,\n" +
-                "  \"itemId\" : \"12345\",\n" +
-                "  \"quantity\" : 2,\n" +
-                "  \"pricePerUnit\" : 7\n" +
-                "} ]";
-
         mockMvc.perform(get("/offer/user/6")).
                 andDo(print()).
                 andExpect(status().isOk()).
-                andExpect(content().string(content));
+                andExpect(content().string(containsString("\"itemId\" : \"12345\"")));
 
 
     }
