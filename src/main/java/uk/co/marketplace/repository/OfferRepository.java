@@ -16,6 +16,7 @@ package uk.co.marketplace.repository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.co.marketplace.domain.Offer;
 
@@ -46,7 +47,7 @@ public interface OfferRepository extends CrudRepository<Offer, Integer> {
      * @param itemId
      * @return lowest offer price for an item
      */
-    @Query("SELECT MIN(pricePerUnit) FROM Offer WHERE ITEMID=?")
+    @Query("SELECT MIN(pricePerUnit) FROM Offer WHERE ITEMID=?1")
     Integer findMinimumOfferPriceOfItem(String itemId);
 
     /**
@@ -85,5 +86,14 @@ public interface OfferRepository extends CrudRepository<Offer, Integer> {
      * @return a list of offers
      */
     List<Offer> findByItemId(String itemId);
+
+    /**
+     * Get a list of offers with the same quantity
+     * @param quantity
+     * @return a list of offers with the given quantity
+     */
+    List<Offer> findByQuantity(Integer quantity);
+
+
 
 }

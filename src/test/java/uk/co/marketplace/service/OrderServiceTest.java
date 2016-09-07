@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import uk.co.marketplace.domain.Bid;
 import uk.co.marketplace.domain.ItemOrder;
+import uk.co.marketplace.domain.Offer;
 
 import java.util.List;
 
@@ -37,16 +39,20 @@ public class OrderServiceTest {
 
     @Autowired
     OrderService orderService;
+    @Autowired
+    OfferService offerService;
+    @Autowired
+    BidService bidService;
 
     @Test
-    public void testCreateOrder() {
+    public void testAddOrder() {
         ItemOrder order = new ItemOrder();
         order.setBuyerId(new Integer("1"));
         order.setSellerId(new Integer("2"));
         order.setItemId("1234A");
         order.setQuantity(new Integer("3"));
         order.setPricePerUnit(new Integer("5"));
-        ItemOrder itemOrder = orderService.createOrder(order);
+        ItemOrder itemOrder = orderService.addOrder(order);
         assertThat(itemOrder.getId(),is(notNullValue()));
     }
 
@@ -60,7 +66,7 @@ public class OrderServiceTest {
         order1.setItemId("1234B");
         order1.setQuantity(new Integer("2"));
         order1.setPricePerUnit(new Integer("6"));
-        ItemOrder itemOrder1 = orderService.createOrder(order1);
+        ItemOrder itemOrder1 = orderService.addOrder(order1);
         assertThat(itemOrder1.getId(), is(notNullValue()));
 
         ItemOrder order2 = new ItemOrder();
@@ -69,7 +75,7 @@ public class OrderServiceTest {
         order2.setItemId("1234C");
         order2.setQuantity(new Integer("2"));
         order2.setPricePerUnit(new Integer("7"));
-        ItemOrder itemOrder2 = orderService.createOrder(order2);
+        ItemOrder itemOrder2 = orderService.addOrder(order2);
         assertThat(itemOrder2.getId(), is(notNullValue()));
 
         ItemOrder order3 = new ItemOrder();
@@ -78,7 +84,7 @@ public class OrderServiceTest {
         order3.setItemId("1234D");
         order3.setQuantity(new Integer("2"));
         order3.setPricePerUnit(new Integer("7"));
-        ItemOrder itemOrder3 = orderService.createOrder(order3);
+        ItemOrder itemOrder3 = orderService.addOrder(order3);
         assertThat(itemOrder3.getId(), is(notNullValue()));
 
         List<ItemOrder> list = orderService.getByBuyerId(buyerId);
@@ -97,7 +103,7 @@ public class OrderServiceTest {
         order1.setItemId("1234B");
         order1.setQuantity(new Integer("2"));
         order1.setPricePerUnit(new Integer("6"));
-        ItemOrder itemOrder1 = orderService.createOrder(order1);
+        ItemOrder itemOrder1 = orderService.addOrder(order1);
         assertThat(itemOrder1.getId(), is(notNullValue()));
 
         ItemOrder order2 = new ItemOrder();
@@ -106,7 +112,7 @@ public class OrderServiceTest {
         order2.setItemId("1234C");
         order2.setQuantity(new Integer("2"));
         order2.setPricePerUnit(new Integer("7"));
-        ItemOrder itemOrder2 = orderService.createOrder(order2);
+        ItemOrder itemOrder2 = orderService.addOrder(order2);
         assertThat(itemOrder2.getId(), is(notNullValue()));
 
         ItemOrder order3 = new ItemOrder();
@@ -115,7 +121,7 @@ public class OrderServiceTest {
         order3.setItemId("1234D");
         order3.setQuantity(new Integer("2"));
         order3.setPricePerUnit(new Integer("7"));
-        ItemOrder itemOrder3 = orderService.createOrder(order3);
+        ItemOrder itemOrder3 = orderService.addOrder(order3);
         assertThat(itemOrder3.getId(), is(notNullValue()));
 
         List<ItemOrder> list = orderService.getBySellerId(sellerId);
@@ -123,4 +129,125 @@ public class OrderServiceTest {
         assertThat(list, contains(order1, order2, order3));
         assertThat(list.get(0), is(order1));
     }
+
+    @Test
+    public void testCreateOrder0() {
+
+        String itemId = "1234C";
+
+        Offer offer = new Offer();
+        offer.setQuantity(new Integer("5"));
+        offer.setPricePerUnit(new Integer("2"));
+        offer.setItemId(itemId);
+        offer.setUser(new Integer("1"));
+        Offer savedOffer = offerService.addOffer(offer);
+        assertThat(savedOffer.getId(), is(notNullValue()));
+
+        Bid bid = new Bid();
+        bid.setQuantity(new Integer("5"));
+        bid.setPricePerUnit(new Integer("2"));
+        bid.setItemId(itemId);
+        bid.setUser(new Integer("2"));
+        Bid savedBid = bidService.addBid(bid);
+        assertThat(savedBid.getId(), is(notNullValue()));
+
+        Boolean result = orderService.createOrder(itemId);
+        assertThat(result,is(true));
+        List<Offer> offerList = offerService.getBySellerId(new Integer("1"));
+        assertThat(offerList, hasSize(0));
+
+    }
+
+
+    @Test
+    public void testCreateOrder1() {
+
+        String itemId = "1234C";
+
+        Offer offer = new Offer();
+        offer.setQuantity(new Integer("10"));
+        offer.setPricePerUnit(new Integer("2"));
+        offer.setItemId(itemId);
+        offer.setUser(new Integer("1"));
+        Offer savedOffer = offerService.addOffer(offer);
+        assertThat(savedOffer.getId(), is(notNullValue()));
+
+        Bid bid = new Bid();
+        bid.setQuantity(new Integer("5"));
+        bid.setPricePerUnit(new Integer("2"));
+        bid.setItemId(itemId);
+        bid.setUser(new Integer("2"));
+        Bid savedBid = bidService.addBid(bid);
+        assertThat(savedBid.getId(), is(notNullValue()));
+
+        Boolean result = orderService.createOrder(itemId);
+        assertThat(result,is(true));
+        List<Offer> offerList = offerService.getBySellerId(new Integer("1"));
+        assertThat(offerList.get(0).getQuantity(), is(5));
+
+    }
+
+    @Test
+    public void testCreateOrderNotMatch() {
+
+        String itemId = "1234C";
+
+        Offer offer = new Offer();
+        offer.setQuantity(new Integer("3"));
+        offer.setPricePerUnit(new Integer("2"));
+        offer.setItemId(itemId);
+        offer.setUser(new Integer("1"));
+        Offer savedOffer = offerService.addOffer(offer);
+        assertThat(savedOffer.getId(), is(notNullValue()));
+
+        Bid bid = new Bid();
+        bid.setQuantity(new Integer("5"));
+        bid.setPricePerUnit(new Integer("2"));
+        bid.setItemId(itemId);
+        bid.setUser(new Integer("2"));
+        Bid savedBid = bidService.addBid(bid);
+        assertThat(savedBid.getId(), is(notNullValue()));
+
+        Boolean result = orderService.createOrder(itemId);
+        assertThat(result,is(false));
+    }
+
+
+    @Test
+    public void testCreateOrderMultipleOffer() {
+
+        String itemId = "1234C";
+
+        Offer offer = new Offer();
+        offer.setQuantity(new Integer("10"));
+        offer.setPricePerUnit(new Integer("2"));
+        offer.setItemId(itemId);
+        offer.setUser(new Integer("1"));
+        Offer savedOffer = offerService.addOffer(offer);
+        assertThat(savedOffer.getId(), is(notNullValue()));
+
+        Offer offer2 = new Offer();
+        offer2.setQuantity(new Integer("3"));
+        offer2.setPricePerUnit(new Integer("2"));
+        offer2.setItemId(itemId);
+        offer2.setUser(new Integer("1"));
+        Offer savedOffer2 = offerService.addOffer(offer2);
+        assertThat(savedOffer2.getId(), is(notNullValue()));
+
+        Bid bid = new Bid();
+        bid.setQuantity(new Integer("5"));
+        bid.setPricePerUnit(new Integer("2"));
+        bid.setItemId(itemId);
+        bid.setUser(new Integer("2"));
+        Bid savedBid = bidService.addBid(bid);
+        assertThat(savedBid.getId(), is(notNullValue()));
+
+        Boolean result = orderService.createOrder(itemId);
+        assertThat(result,is(true));
+        List<Offer> offerList = offerService.getBySellerId(new Integer("1"));
+        assertThat(offerList, hasSize(2));
+        assertThat(offerList.get(0).getQuantity(), is(5));
+
+    }
+
 }

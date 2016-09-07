@@ -29,6 +29,7 @@ import uk.co.marketplace.service.BidService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -78,18 +79,20 @@ public class BidControllerTest extends ControllerBaseTest {
         Bid bid1 = new Bid();
         bid1.setUser(1);
         bid1.setItemId("12345");
-        bid1.setPricePerUnit(5);
+        bid1.setPricePerUnit(6);
         bid1.setQuantity(7);
         bidService.addBid(bid1);
 
         Bid bid2 = new Bid();
         bid2.setUser(1);
         bid2.setItemId("12345");
-        bid2.setPricePerUnit(7);
+        bid2.setPricePerUnit(4);
         bid2.setQuantity(10);
         bidService.addBid(bid2);
 
-        mockMvc.perform(get("/bid/price/12345")).andDo(print()).andExpect(status().isOk());
+        mockMvc.perform(get("/bid/price/12345")).andDo(print()).
+                andExpect(status().isOk()).
+                andExpect(content().string("6"));
     }
 
 }

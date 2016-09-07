@@ -23,12 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.co.marketplace.domain.Offer;
 import uk.co.marketplace.service.OfferService;
 
+import static org.mockito.Matchers.contains;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -71,10 +74,48 @@ public class OfferControllerTest extends ControllerBaseTest {
         offer2.setUser(6);
         offerService.addOffer(offer2);
 
-        mockMvc.perform(get("/offer/user/6")).andDo(print()).andExpect(status().isOk());
+        String content = "[ {\n" +
+                "  \"id\" : 1,\n" +
+                "  \"user\" : 6,\n" +
+                "  \"itemId\" : \"12345\",\n" +
+                "  \"quantity\" : 2,\n" +
+                "  \"pricePerUnit\" : 8\n" +
+                "}, {\n" +
+                "  \"id\" : 2,\n" +
+                "  \"user\" : 6,\n" +
+                "  \"itemId\" : \"12345\",\n" +
+                "  \"quantity\" : 2,\n" +
+                "  \"pricePerUnit\" : 7\n" +
+                "} ]";
+
+        mockMvc.perform(get("/offer/user/6")).
+                andDo(print()).
+                andExpect(status().isOk()).
+                andExpect(content().string(content));
+
+
     }
 
-    public void testGetCurrentPriceForItem() {
+    @Test
+    public void testGetCurrentPriceForItem() throws Exception {
+
+        Offer offer1 = new Offer();
+        offer1.setItemId("12345");
+        offer1.setPricePerUnit(8);
+        offer1.setQuantity(2);
+        offer1.setUser(6);
+        offerService.addOffer(offer1);
+
+        Offer offer2 = new Offer();
+        offer2.setItemId("12345");
+        offer2.setPricePerUnit(7);
+        offer2.setQuantity(2);
+        offer2.setUser(6);
+        offerService.addOffer(offer2);
+
+        mockMvc.perform(get("/offer/price/12345")).andDo(print()).
+                andExpect(status().isOk()).
+                andExpect(content().string("7"));
 
     }
 
