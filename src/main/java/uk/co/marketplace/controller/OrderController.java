@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import uk.co.marketplace.domain.ItemOrder;
 import uk.co.marketplace.service.OrderService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -43,5 +45,14 @@ public class OrderController {
         return orderService.getByBuyerId(buyerId);
     }
 
+    @RequestMapping(value = "",
+            method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createItemOrder(@RequestParam(name="itemId") String itemId,
+                       HttpServletRequest request, HttpServletResponse response) throws Exception {
+        boolean result = orderService.createOrder(itemId);
+        response.setHeader("Location", request.getRequestURL().append("/").append(result).toString());
+
+    }
 
 }

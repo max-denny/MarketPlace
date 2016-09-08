@@ -14,6 +14,7 @@ package uk.co.marketplace.controller;
  /* and limitations under the License.
  *********************************************************************************************/
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -119,11 +121,14 @@ public class OrderControllerTest extends ControllerBaseTest {
         ItemOrder itemOrder3 = orderService.addOrder(order3);
         assertThat(itemOrder3.getId(), is(notNullValue()));
 
-        mockMvc.perform(get("/order/buyer/2")).andDo(print()).andExpect(status().isOk());
+        mockMvc.perform(get("/order/buyer/2")).
+                andDo(print()).
+                andExpect(status().isOk()).andExpect(content().string(containsString("itemId\" : \"1234B\"")));
     }
 
-    public void testCreateOrder() {
-        // boolean createOrder(String itemId);
+    @Test
+    public void testCreateOrder() throws Exception{
+
         String itemId = "1234C";
 
         Offer offer = new Offer();
@@ -149,6 +154,8 @@ public class OrderControllerTest extends ControllerBaseTest {
         bid.setUser(new Integer("2"));
         Bid savedBid = bidService.addBid(bid);
         assertThat(savedBid.getId(), is(notNullValue()));
+
+        mockMvc.perform(post("/order").param("itemId",itemId)).andDo(print()).andExpect(status().isCreated());
     }
 
 
